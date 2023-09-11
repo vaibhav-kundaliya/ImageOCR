@@ -26,7 +26,7 @@ def imageOCR(images):
    Returns:
        dataframe: Dataframe having extracted email,  mobile number and website
    """
-   custom_oem_psm_config = r'--oem 2 --psm 12'
+   custom_oem_psm_config = r'--oem 2 --psm 12 --tessdata-dir tessdata'
    data = {
       "Website": [],
       "Text in card": [],
