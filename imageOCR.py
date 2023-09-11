@@ -8,15 +8,6 @@ CONTACT_REGEX = r'\+\d{2}(?:\s|-)?(?:\d{2,4}(?:\s|-)?){2,3}\d{2,4}'
 URL_REGEX = r"\s\w+\.(?:com|in|net|org)|www\.\w+\.(?:com|in|net|org)"
 EMAIL_REGEX = r'[\d|\w]+@\w+.(?:com|in|net|org)'
 
-data = {
-   "Website": [],
-   "Text in card": [],
-   "Contacts": [],
-   "Emails": [],
-   "Time": []
-}
-
-
 def imageOCR(images):
    """Extract text from given list of images
 
