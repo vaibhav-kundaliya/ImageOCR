@@ -2,19 +2,16 @@ import React from "react";
 import Webcam from "react-webcam";
 import { CameraFilled } from "@ant-design/icons";
 import { Button, Tooltip } from "antd";
-import ConvertToBlobURLobject from "../../utility/ConvertToBlobURLobject";
+import UploadImageToServer from "../../utility/UploadImageToServer";
 
 export default function CaptureImageComponent({ webCamref, addFile }) {
    const captureImage = async () => {
       const image = webCamref.current.getScreenshot();
-      const { BlobUrl, BlobObject } = await ConvertToBlobURLobject(image);
       const id = Date.now();
+      await UploadImageToServer(image, "webcamImage", `${id}.jpg`);
       addFile({
          id: id,
-         file: BlobUrl,
-         fileType: "image",
-         fileName: `${id}_WebcamImage.jpg`,
-         fileObject: BlobObject,
+         fileName: `${id}.jpg`
       });
    };
 

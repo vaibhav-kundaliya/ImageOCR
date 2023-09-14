@@ -1,21 +1,20 @@
 import React from "react";
 import { InboxOutlined } from "@ant-design/icons";
 import { Upload } from "antd";
+import UploadImageToServer from "../../utility/UploadImageToServer";
+import SendPostRequest from "../../utility/SendPostRequest";
 
 export default function UploadFilesComponent({ addFile }) {
-   const customRequest = ({ file, onSuccess }) => {
-      let fileType;
-      if (file.type === "image/png" || file.type === "image/jpeg" || file.type === "image/jpg") fileType = "image";
-      else {
-         fileType = "zip";
-      }
+   const customRequest = async ({ file, onSuccess }) => {
+      
       const id = Date.now()
+      const form = new FormData()
+      form.append("file", file, `${id}.jpg`)
+      const res = await SendPostRequest(process.env.REACT_APP_SERVER+"saveImage", form)
+      
       addFile({
          id: id,
-         file: URL.createObjectURL(file),
-         fileType: fileType,
-         fileName: `${id}_${file.name}`,
-         fileObject: file,
+         fileName: `${id}.jpg`
       });
 
       onSuccess();

@@ -1,35 +1,18 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 import { Typography, Tabs, Button } from "antd";
 import { UploadOutlined, CameraOutlined, RightOutlined } from "@ant-design/icons";
 import UploadFilesComponent from "../components/uploadComponents/UploadFilesComponent";
 import CaptureImageComponent from "../components/uploadComponents/CaptureImageComponent";
 import DisplayImagesComponent from "../components/displayImagesComponent/DisplayImagesComponent";
-import postRequest from "../utility/postRequest";
 import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 
-function FileCapturePage() {
-   const webCamref = useRef(null);
-   const [fileList, setFileList] = useState([]);
-   const navigate = useNavigate()
-
-   const addFile = (file) => {
-      console.log(file)
-      setFileList([file, ...fileList]);
-   };
-
-   const removeFile = (removedFile) => {
-      let newList = [];
-      fileList.map((file) => {
-         if (removedFile !== file.id) newList.push(file);
-      });
-      setFileList(newList);
-   };
-
+function FileCapturePage({webCamref, fileList, addFile, removeFile }) {
+   const navigate = useNavigate();
+   
    const sendPostRequest = () => {
-      postRequest(fileList);
-      navigate("/text-extraction")
+      navigate("/text-extraction");
    };
 
    return (

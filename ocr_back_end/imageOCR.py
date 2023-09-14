@@ -18,14 +18,10 @@ def imageOCR(images):
        dataframe: Dataframe having extracted email,  mobile number and website
    """
    custom_oem_psm_config = r'--oem 2 --psm 12 --tessdata-dir tessdata'
-   data = {
-      "Website": [],
-      "Text in card": [],
-      "Contacts": [],
-      "Emails": []
-   }
+   final_data = []
    for image in images:
-      img = Image.open(image)
+      data = {}
+      img = Image.open("uploads/"+image['fileName'])
       text = pytesseract.image_to_data(img, config=custom_oem_psm_config, output_type=Output.DICT)
       final_text = " ".join(text['text'])
 
@@ -33,11 +29,16 @@ def imageOCR(images):
       urls = re.findall(URL_REGEX, final_text, re.IGNORECASE)
       emails = re.findall(EMAIL_REGEX, final_text, re.IGNORECASE)
    
-      data["Text in card"].append(final_text)
-      data["Emails"].append(",".join(emails))
-      data["Website"].append(",".join(urls))
-      data["Contacts"].append(",".join(contacts))
-   
-   df = pd.DataFrame(data)
-   return df
+      data["text"] = final_text
+      data["email"] = ",".join(emails)
+      data["website"] = ",".join(urls)
+      data["contact"] = ",".join(contacts)
+      data["id"] = image['id']
+      data['fileName'] = image['fileName']
+
+      final_data.append(data)
+
+   df = pd.DataFrame(final_data)
+   df.to_excel("example.xlsx", index=False)
+   return final_data
 
