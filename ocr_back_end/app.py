@@ -3,8 +3,6 @@ from flask import Flask, jsonify, request, send_file, make_response
 from flask_cors import CORS
 import os
 from imageOCR import imageOCR
-from pathlib import Path
-from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -19,7 +17,6 @@ print(uploads_directory)
 def saveImage():
     file = request.files['file']
     if file.content_type in ['image/jpeg', 'image/jpg', 'image/png']:
-        print("upload_folder ---> "+uploads_directory+"/"+file.filename)
         file.save(uploads_directory+"/"+file.filename)
         return make_response('Image is uploaded', 200)
     else:
@@ -57,7 +54,6 @@ def extractText():
     if len(files) == 0:
         return make_response("No images are uploaded", 403)
     
-    print(files, "adsdsad")
     response_data = imageOCR(files)
     
     if response_data:

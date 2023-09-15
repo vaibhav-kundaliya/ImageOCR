@@ -22,7 +22,6 @@ def imageOCR(images):
     custom_oem_psm_config = r'--oem 2 --psm 12'
     final_data = []
     for image in images:
-        print(image)
         try:
             data = {}
             img = Image.open(current_directory+"/uploads/"+image['fileName'])
