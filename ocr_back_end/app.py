@@ -3,6 +3,8 @@ from flask import Flask, jsonify, request, send_file, make_response
 from flask_cors import CORS
 import os
 from imageOCR import imageOCR
+from pathlib import Path
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -10,11 +12,15 @@ CORS(app, supports_credentials=True)
 current_directory = os.path.dirname(os.path.realpath(__file__))
 uploads_directory = os.path.join(current_directory, 'uploads')
 
+print(current_directory)
+print(uploads_directory)
+
 @app.route("/saveImage", methods=["POST"])
 def saveImage():
     file = request.files['file']
     if file.content_type in ['image/jpeg', 'image/jpg', 'image/png']:
-        file.save(uploads_directory + "/" + file.filename)
+        print("upload_folder ---> "+uploads_directory+"/"+file.filename)
+        file.save(uploads_directory+"/"+file.filename)
         return make_response('Image is uploaded', 200)
     else:
         return make_response("Invalid file type of", 403)
