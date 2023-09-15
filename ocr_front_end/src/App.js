@@ -3,30 +3,68 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import FileCapturePage from "./pages/FileCapturePage";
 import TextExtractedPage from "./pages/TextExtractedPage";
 import SendGetRequest from "./utility/SendGetRequest";
+import { message } from "antd";
 
 export default function App() {
    const webCamref = useRef(null);
    const storedFileList = JSON.parse(localStorage.getItem("fileList"));
    const [fileList, setFileList] = useState(storedFileList ? storedFileList : []);
+   const [messageApi, contextHolder] = message.useMessage();
 
    const addFile = (file) => {
-      setFileList([file, ...fileList]);
-      localStorage.setItem("fileList", JSON.stringify([file, ...fileList]));
+      const newList = fileList;
+      newList.push(file);
+      newList.reverse();
+      setFileList([...newList]);
+      localStorage.setItem("fileList", JSON.stringify([...newList]));
    };
 
    const removeFile = async (removedFile) => {
       const newList = fileList.filter((file) => removedFile.id !== file.id);
-      localStorage.setItem("fileList", JSON.stringify(newList));
-      await SendGetRequest(process.env.REACT_APP_SERVER + "removeImage/" + removedFile.fileName);
+      try {
+         const response = await SendGetRequest(process.env.REACT_APP_SERVER + "removeImage/" + removedFile.fileName);
+         messageApi.open({
+            key: "success",
+            type: "success",
+            content: response.data,
+         });
+      } catch (error) {
+         messageApi.open({
+            key: "error",
+            type: "error",
+            content: error.response.data,
+         });
+      }
       setFileList(newList);
+      localStorage.setItem("fileList", JSON.stringify(newList));
+   };
+
+   const removeAllFiles = async () => {
+      try {
+         const response = await SendGetRequest(process.env.REACT_APP_SERVER + "removeAllImages");
+         messageApi.open({
+            key: "success",
+            type: "success",
+            content: response.data,
+         });
+         setFileList([]);
+         localStorage.removeItem("fileList");
+      } catch (error) {
+         messageApi.open({
+            key: "error",
+            type: "error",
+            content: error.response.data,
+         });
+      }
    };
 
    return (
       <div>
+         {contextHolder}
          <Router>
             <Routes>
-               <Route path="/" element={<FileCapturePage webCamref={webCamref} fileList={fileList} addFile={addFile} removeFile={removeFile} />} />
-               <Route path="/text-extraction" element={<TextExtractedPage fileList={fileList} />} />
+               <Route path="/" element={<FileCapturePage webCamref={webCamref} fileList={fileList} addFile={addFile} removeFile={removeFile} removeAllFiles={removeAllFiles} />} />
+               <Route path="/text-extraction" element={<TextExtractedPage fileList={fileList} setFileList={setFileList} />} />
             </Routes>
          </Router>
       </div>

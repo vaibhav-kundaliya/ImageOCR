@@ -1,35 +1,62 @@
 import React, { useEffect, useState } from "react";
-import { List, Row, Col, Button, Spin } from "antd";
-import { ExportOutlined } from "@ant-design/icons";
+import { List, Row, Col, Button, Spin, message } from "antd";
+import { ExportOutlined, LeftOutlined } from "@ant-design/icons";
 import SendPostRequest from "../utility/SendPostRequest";
 import SendGetRequest from "../utility/SendGetRequest";
-import { LoadingOutlined } from '@ant-design/icons';
+import { LoadingOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
-const TextExtractedPage = ({ fileList }) => {
+const TextExtractedPage = ({ fileList, setFileList }) => {
    const [fileWithExtractedText, setFileWithExtractedText] = useState();
    const [isLoading, setLoading] = useState(true);
+   const [messageApi, contextHolder] = message.useMessage();
+   const navigate = useNavigate()
+
    useEffect(() => {
       const fetchList = async () => {
-         if (fileList.length > 0) {
+         try {
             const response = await SendPostRequest(process.env.REACT_APP_SERVER + "extractText", fileList);
-            setLoading(false);
             setFileWithExtractedText(response.data);
+            setLoading(false);
+            if(response)
+            messageApi.open({
+               key:"success",
+               type: "success",
+               content: "Your data is here",
+            });
+         } catch (error) {
+            messageApi.open({
+               key:"error",
+               type: "error",
+               content: error.response.data,
+            });
+            setLoading(false);
          }
       };
       fetchList();
    }, []);
 
+   const goToFileCapturePage = () => {
+      navigate("/")
+   }
+
    const downloadFile = async () => {
-      const response = await SendGetRequest(process.env.REACT_APP_SERVER + "/downloadFile");
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "exported_data.xlsx";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      // Release the blob URL after the download
-      window.URL.revokeObjectURL(url);
+      try {
+         const response = await SendGetRequest(process.env.REACT_APP_SERVER + "/downloadFile");
+         const url = window.URL.createObjectURL(new Blob([response.data]));
+         const a = document.createElement("a");
+         a.href = url;
+         a.download = "export_data.csv";
+         document.body.appendChild(a);
+         a.click();
+         document.body.removeChild(a);
+         window.URL.revokeObjectURL(url);
+      } catch (error) {
+         messageApi.open({
+            type: "error",
+            content: error.response.data,
+         });
+      }
    };
 
    return (
@@ -39,11 +66,15 @@ const TextExtractedPage = ({ fileList }) => {
             margin: "auto",
          }}
       >
+         {contextHolder}
          <div style={{ textAlign: "center" }}>
-            <h1> Your Extracted text is here</h1>
+            <h1> Your Extracted text will be displayed here</h1>
          </div>
-         <Spin indicator={< LoadingOutlined />}  spinning={isLoading} size="large" tip="Wait we are reading your images...">
-            <div style={{ display: "flex", justifyContent: "end", margin: "2rem 0rem" }}>
+         <Spin indicator={<LoadingOutlined />} spinning={isLoading} size="large" tip="Wait we are reading your images...">
+            <div style={{ display: "flex", justifyContent: "space-between", margin: "2rem 0rem" }}>
+               <Button onClick={goToFileCapturePage}>
+               <LeftOutlined /> Go Back
+               </Button>
                <Button type="primary" onClick={downloadFile}>
                   <ExportOutlined /> Export
                </Button>
@@ -59,7 +90,7 @@ const TextExtractedPage = ({ fileList }) => {
                   <List.Item key={item.id}>
                      <Row style={{ justifyContent: "space-between" }}>
                         <Col>
-                           <List.Item.Meta title={item.id} />
+                           <List.Item.Meta title="Buisness Card" />
                            <table>
                               <tbody>
                                  <tr>

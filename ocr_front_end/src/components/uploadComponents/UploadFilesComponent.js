@@ -1,27 +1,43 @@
 import React from "react";
+import { v4 as uuid } from "uuid";
 import { InboxOutlined } from "@ant-design/icons";
-import { Upload } from "antd";
-import UploadImageToServer from "../../utility/UploadImageToServer";
+import { Upload, message } from "antd";
 import SendPostRequest from "../../utility/SendPostRequest";
 
 export default function UploadFilesComponent({ addFile }) {
-   const customRequest = async ({ file, onSuccess }) => {
-      
-      const id = Date.now()
-      const form = new FormData()
-      form.append("file", file, `${id}.jpg`)
-      const res = await SendPostRequest(process.env.REACT_APP_SERVER+"saveImage", form)
-      
-      addFile({
-         id: id,
-         fileName: `${id}.jpg`
-      });
+   const [messageApi, contextHolder] = message.useMessage();
 
-      onSuccess();
+   const customRequest = async ({ file, onSuccess }) => {
+      const id = uuid();
+      const form = new FormData();
+      const fileExtension = file.type.split("/")[1];
+      const newFileName = `${id}.${fileExtension}`;
+      form.append("file", file, newFileName);
+
+      try {
+         const response = await SendPostRequest(process.env.REACT_APP_SERVER + "saveImage", form);
+         addFile({
+            id: id,
+            fileName: newFileName,
+         });
+         messageApi.open({
+            key: "success",
+            type: "success",
+            content: response.data,
+         });
+         onSuccess();
+      } catch (error) {
+         messageApi.open({
+            key: "error",
+            type: "error",
+            content: error.response.data,
+         });
+      }
    };
 
    return (
       <div>
+         {contextHolder}
          <Upload.Dragger name="file" accept="image/png, image/jpeg, .zip, .rar" multiple={true} customRequest={customRequest} showUploadList={false}>
             <p className="ant-upload-drag-icon">
                <InboxOutlined />
