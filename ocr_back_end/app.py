@@ -63,4 +63,9 @@ def downloadFile():
         return make_response("You haven't uploaded images", 403)
 
 if __name__ == "__main__":
+    try:
+        list = os.listdir("uploads")
+    except:
+        os.mkdir("uploads")
+
     app.run()
