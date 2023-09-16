@@ -26,16 +26,18 @@ def saveImage():
 def sendImage(file):
     try:
         return send_file(uploads_directory+"/"+file, mimetype='image/jpeg')
-    except:
-        return make_response('Image is not exist', 403)
+    except Exception as exe:
+        print(exe)
+        return make_response(' Image is not exist', 403)
         
 @app.route("/removeImage/<file>", methods=["GET"])
 def removeImage(file):
     try:
         os.remove(uploads_directory+"/"+file)
         return make_response('Image is removed', 200)
-    except:
-        return make_response('Image is not exist', 403)
+    except Exception as exe:
+        print(exe)
+        return make_response(' Image is not exist', 403)
 
 @app.route("/removeAllImages", methods=["GET"])
 def removeAllImages():
@@ -44,8 +46,9 @@ def removeAllImages():
         for file in files:
             os.remove(uploads_directory+"/"+file)
         return make_response('Images are removed', 200)
-    except:
-        return make_response('Something went wrong', 500)
+    except Exception as exe:
+        print(exe)
+        return make_response(' Something went wrong ', 500)
 
 
 @app.route("/extractText", methods=["POST"])
@@ -53,22 +56,26 @@ def extractText():
     files = request.json
     if len(files) == 0:
         return make_response("No images are uploaded", 403)
+    try:
+        response_data = imageOCR(files)
     
-    response_data = imageOCR(files)
-    
-    if response_data:
-        return make_response(jsonify(response_data), 200)
-    else:
+        if response_data:
+            return make_response(jsonify(response_data), 200)
+        else:
+            return make_response("Something went wrong", 500)
+    except Exception as exe:
+        print(exe)
         return make_response("Something went wrong", 500)
 
 @app.route("/downloadFile", methods=["GET"])
 def downloadFile():
     try:
         return send_file(current_directory+"/example.csv", as_attachment=True)
-    except:
-        return make_response("You haven't uploaded images", 403)
+    except Exception as exe:
+        print(exe)
+        return make_response(" You haven't uploaded images", 403)
 
 if __name__ == "__main__":
     if not os.path.exists(uploads_directory):
         os.makedirs(uploads_directory)
-    app.run()
+    app.run(host="0.0.0.0", port=5000, debug=True)
