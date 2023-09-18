@@ -1,34 +1,52 @@
 import React, { useEffect, useState } from "react";
-import { List, Row, Col, Button, Spin, message } from "antd";
+import { List, Row, Col, Button, Spin, message, Typography } from "antd";
 import { ExportOutlined, LeftOutlined } from "@ant-design/icons";
 import SendPostRequest from "../utility/SendPostRequest";
 import SendGetRequest from "../utility/SendGetRequest";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import downloadFile from "../utility/downloadCSVfile";
+
+const { Paragraph } = Typography;
 
 const TextExtractedPage = ({ fileList, setFileList }) => {
-   const [fileWithExtractedText, setFileWithExtractedText] = useState();
+   const [fileWithExtractedText, setFileWithExtractedText] = useState([]);
    const [isLoading, setLoading] = useState(true);
    const [messageApi, contextHolder] = message.useMessage();
-   const navigate = useNavigate()
+   const navigate = useNavigate();
+
+   const isFilesUpdated = () => {
+      const StoredList = JSON.parse(localStorage.getItem("ExtractedTextList"));
+      const minLenght = StoredList.length < fileList.length ? StoredList.length : fileList.length;
+      for (let i = 0; i < minLenght; i++) {
+         if (StoredList[i].id !== fileList[i].id) return true;
+      }
+      return false;
+   };
 
    useEffect(() => {
       const fetchList = async () => {
          try {
-            const response = await SendPostRequest(process.env.REACT_APP_SERVER + "extractText", fileList);
-            setFileWithExtractedText(response.data);
+            if (!localStorage.getItem("ExtractedTextList") || isFilesUpdated()) {
+               const response = await SendPostRequest(process.env.REACT_APP_SERVER + "extractText", fileList);
+               setFileWithExtractedText(response.data);
+               localStorage.setItem("ExtractedTextList", JSON.stringify(response.data));
+               if (response)
+                  messageApi.open({
+                     key: "success",
+                     type: "success",
+                     content: "Your data is here",
+                  });
+            } else {
+               setFileWithExtractedText(JSON.parse(localStorage.getItem("ExtractedTextList")));
+            }
+
             setLoading(false);
-            if(response)
-            messageApi.open({
-               key:"success",
-               type: "success",
-               content: "Your data is here",
-            });
          } catch (error) {
             messageApi.open({
-               key:"error",
+               key: "error",
                type: "error",
-               content: error.response.data,
+               content: error.data,
             });
             setLoading(false);
          }
@@ -37,26 +55,16 @@ const TextExtractedPage = ({ fileList, setFileList }) => {
    }, []);
 
    const goToFileCapturePage = () => {
-      navigate("/")
-   }
+      navigate("/");
+   };
 
-   const downloadFile = async () => {
-      try {
-         const response = await SendGetRequest(process.env.REACT_APP_SERVER + "/downloadFile");
-         const url = window.URL.createObjectURL(new Blob([response.data]));
-         const a = document.createElement("a");
-         a.href = url;
-         a.download = "export_data.csv";
-         document.body.appendChild(a);
-         a.click();
-         document.body.removeChild(a);
-         window.URL.revokeObjectURL(url);
-      } catch (error) {
-         messageApi.open({
-            type: "error",
-            content: error.response.data,
-         });
+   const updateExtractedText = (event, id, perameter) => {
+      const updatedList = fileWithExtractedText;
+      for (let i = 0; i < fileWithExtractedText.length; i++) {
+         if (updatedList[i].id === id) updatedList[i][perameter] = event;
       }
+      setFileWithExtractedText([...updatedList]);
+      localStorage.setItem("ExtractedTextList", JSON.stringify([...updatedList]));
    };
 
    return (
@@ -73,7 +81,7 @@ const TextExtractedPage = ({ fileList, setFileList }) => {
          <Spin indicator={<LoadingOutlined />} spinning={isLoading} size="large" tip="Wait we are reading your images...">
             <div style={{ display: "flex", justifyContent: "space-between", margin: "2rem 0rem" }}>
                <Button onClick={goToFileCapturePage}>
-               <LeftOutlined /> Go Back
+                  <LeftOutlined /> Go Back
                </Button>
                <Button type="primary" onClick={downloadFile}>
                   <ExportOutlined /> Export
@@ -95,15 +103,36 @@ const TextExtractedPage = ({ fileList, setFileList }) => {
                               <tbody>
                                  <tr>
                                     <th>Email:</th>
-                                    <td>{item.email}</td>
+                                    <Paragraph
+                                       style={{ marginBottom: 0 }}
+                                       editable={{
+                                          onChange: (event) => updateExtractedText(event, item.id, "email"),
+                                       }}
+                                    >
+                                       {item.email}
+                                    </Paragraph>
                                  </tr>
                                  <tr>
                                     <th>Contact:</th>
-                                    <td>{item.contact}</td>
+                                    <Paragraph
+                                       style={{ marginBottom: 0 }}
+                                       editable={{
+                                          onChange: (event) => updateExtractedText(event, item.id, "contact"),
+                                       }}
+                                    >
+                                       {item.contact}
+                                    </Paragraph>
                                  </tr>
                                  <tr>
                                     <th>Website:</th>
-                                    <td>{item.website}</td>
+                                    <Paragraph
+                                       style={{ marginBottom: 0 }}
+                                       editable={{
+                                          onChange: (event) => updateExtractedText(event, item.id, "website"),
+                                       }}
+                                    >
+                                       {item.website}
+                                    </Paragraph>
                                  </tr>
                               </tbody>
                            </table>

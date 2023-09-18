@@ -29,10 +29,11 @@ export default function App() {
             content: response.data,
          });
       } catch (error) {
+         console.log(error)
          messageApi.open({
             key: "error",
             type: "error",
-            content: error.response.data,
+            content: error.data,
          });
       }
       setFileList(newList);
@@ -53,7 +54,7 @@ export default function App() {
          messageApi.open({
             key: "error",
             type: "error",
-            content: error.response.data,
+            content: error.data,
          });
       }
    };

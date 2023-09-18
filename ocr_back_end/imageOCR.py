@@ -20,7 +20,7 @@ def imageOCR(images):
     Returns:
         dataframe: Dataframe having extracted email,  mobile number and website
     """
-    custom_oem_psm_config = r'--oem 2 --psm 12 --tessdata-dir '+current_directory+"/"+"tessdata"
+    custom_oem_psm_config = r'--oem 2 --psm 12 --tessdata-dir tessdata'
     final_data = []
     for image in images:
         data = {}
@@ -32,10 +32,9 @@ def imageOCR(images):
         urls = re.findall(URL_REGEX, final_text, re.IGNORECASE)
         emails = re.findall(EMAIL_REGEX, final_text, re.IGNORECASE)
     
-        data["text"] = final_text
-        data["email"] = ",".join(emails)
-        data["website"] = ",".join(urls)
-        data["contact"] = ",".join(contacts)
+        data["email"] = " | ".join(emails)
+        data["website"] = " | ".join(urls)
+        data["contact"] = " | ".join(contacts)
         data["id"] = image['id']
         data['fileName'] = image['fileName']
 

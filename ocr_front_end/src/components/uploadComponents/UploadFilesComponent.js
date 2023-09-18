@@ -30,7 +30,7 @@ export default function UploadFilesComponent({ addFile }) {
          messageApi.open({
             key: "error",
             type: "error",
-            content: error.response.data,
+            content: error.data,
          });
       }
    };
