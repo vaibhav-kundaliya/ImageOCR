@@ -28,7 +28,7 @@ const TextExtractedPage = ({ fileList, setFileList }) => {
       const fetchList = async () => {
          try {
             if (!localStorage.getItem("ExtractedTextList") || isFilesUpdated()) {
-               const response = await SendPostRequest(process.env.REACT_APP_SERVER + "extractText", fileList);
+               const response = await SendPostRequest("extractText", fileList);
                setFileWithExtractedText(response.data);
                localStorage.setItem("ExtractedTextList", JSON.stringify(response.data));
                if (response)
@@ -138,7 +138,7 @@ const TextExtractedPage = ({ fileList, setFileList }) => {
                            </table>
                         </Col>
                         <Col>
-                           <img width={272} height={200} alt="logo" src={process.env.REACT_APP_SERVER + "getImage/" + item.fileName} />
+                           <img width={272} height={200} alt="logo" src={process.env.REACT_APP_BACKEND_URL + "getImage/" + item.fileName} />
                         </Col>
                      </Row>
                   </List.Item>

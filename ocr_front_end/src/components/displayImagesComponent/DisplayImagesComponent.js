@@ -14,7 +14,7 @@ export default function DisplayImagesComponent({ fileList, removeFile }) {
                         file.fileType === "zip" ? (
                            <div style={{ margin: "12px" }}>{file.fileName}</div>
                         ) : (
-                           <img src={`${process.env.REACT_APP_SERVER}/getImage/${file.fileName}`} alt={file.file} style={{ width: 300, height: 240 }} />
+                           <img src={`${process.env.REACT_APP_BACKEND_URL}/getImage/${file.fileName}`} alt={file.file} style={{ width: 300, height: 240 }} />
                         )
                      }
                   >

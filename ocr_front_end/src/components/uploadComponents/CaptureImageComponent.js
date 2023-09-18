@@ -16,7 +16,7 @@ export default function CaptureImageComponent({ webCamref, addFile }) {
       let formData = new FormData();
       formData.append("file", object, `${id}.jpg`);
       try {
-         const response = await SendPostRequest(process.env.REACT_APP_SERVER + "saveImage", formData);
+         const response = await SendPostRequest("saveImage", formData);
          addFile(
             {
                id: id,

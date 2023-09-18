@@ -15,7 +15,7 @@ export default function UploadFilesComponent({ addFile }) {
       form.append("file", file, newFileName);
 
       try {
-         const response = await SendPostRequest(process.env.REACT_APP_SERVER + "saveImage", form);
+         const response = await SendPostRequest("saveImage", form);
          addFile({
             id: id,
             fileName: newFileName,

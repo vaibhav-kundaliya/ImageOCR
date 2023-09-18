@@ -22,14 +22,13 @@ export default function App() {
    const removeFile = async (removedFile) => {
       const newList = fileList.filter((file) => removedFile.id !== file.id);
       try {
-         const response = await SendGetRequest(process.env.REACT_APP_SERVER + "removeImage/" + removedFile.fileName);
+         const response = await SendGetRequest("removeImage/" + removedFile.fileName);
          messageApi.open({
             key: "success",
             type: "success",
             content: response.data,
          });
       } catch (error) {
-         console.log(error)
          messageApi.open({
             key: "error",
             type: "error",
@@ -42,7 +41,7 @@ export default function App() {
 
    const removeAllFiles = async () => {
       try {
-         const response = await SendGetRequest(process.env.REACT_APP_SERVER + "removeAllImages");
+         const response = await SendGetRequest("removeAllImages");
          messageApi.open({
             key: "success",
             type: "success",
