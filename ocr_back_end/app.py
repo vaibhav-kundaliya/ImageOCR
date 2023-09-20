@@ -1,4 +1,3 @@
-from turtle import up
 from flask import Flask, jsonify, request, send_file, make_response
 from flask_cors import CORS
 import os

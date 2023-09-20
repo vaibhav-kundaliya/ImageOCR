@@ -1,0 +1,7 @@
+ocr_back_end/__pycache__/
+ocr_back_end/.env/
+ocr_back_end/uploads/
+
+
+ocr_front_end/node_modules/
+ocr_front_end/.env

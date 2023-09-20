@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { List, Row, Col, Button, Spin, message, Typography } from "antd";
+import { List, Row, Col, Button, Spin, message, Typography, Image } from "antd";
 import { ExportOutlined, LeftOutlined } from "@ant-design/icons";
 import SendPostRequest from "../utility/SendPostRequest";
-import SendGetRequest from "../utility/SendGetRequest";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import downloadFile from "../utility/downloadCSVfile";
+import DownloadComponent from "../components/downloadComponents/DownloadComponent";
 
 const { Paragraph } = Typography;
 
-const TextExtractedPage = ({ fileList, setFileList }) => {
+const TextExtractedPage = ({ fileList }) => {
    const [fileWithExtractedText, setFileWithExtractedText] = useState([]);
    const [isLoading, setLoading] = useState(true);
    const [messageApi, contextHolder] = message.useMessage();
@@ -22,6 +21,19 @@ const TextExtractedPage = ({ fileList, setFileList }) => {
          if (StoredList[i].id !== fileList[i].id) return true;
       }
       return false;
+   };
+
+   const goToFileCapturePage = () => {
+      navigate("/");
+   };
+
+   const updateExtractedText = (event, id, perameter) => {
+      const updatedList = fileWithExtractedText;
+      for (let i = 0; i < fileWithExtractedText.length; i++) {
+         if (updatedList[i].id === id) updatedList[i][perameter] = event;
+      }
+      setFileWithExtractedText([...updatedList]);
+      localStorage.setItem("ExtractedTextList", JSON.stringify([...updatedList]));
    };
 
    useEffect(() => {
@@ -54,18 +66,7 @@ const TextExtractedPage = ({ fileList, setFileList }) => {
       fetchList();
    }, []);
 
-   const goToFileCapturePage = () => {
-      navigate("/");
-   };
-
-   const updateExtractedText = (event, id, perameter) => {
-      const updatedList = fileWithExtractedText;
-      for (let i = 0; i < fileWithExtractedText.length; i++) {
-         if (updatedList[i].id === id) updatedList[i][perameter] = event;
-      }
-      setFileWithExtractedText([...updatedList]);
-      localStorage.setItem("ExtractedTextList", JSON.stringify([...updatedList]));
-   };
+ 
 
    return (
       <div
@@ -83,9 +84,8 @@ const TextExtractedPage = ({ fileList, setFileList }) => {
                <Button onClick={goToFileCapturePage}>
                   <LeftOutlined /> Go Back
                </Button>
-               <Button type="primary" onClick={downloadFile}>
-                  <ExportOutlined /> Export
-               </Button>
+
+               <DownloadComponent data={fileWithExtractedText} />
             </div>
             <List
                itemLayout="vertical"
@@ -98,7 +98,13 @@ const TextExtractedPage = ({ fileList, setFileList }) => {
                   <List.Item key={item.id}>
                      <Row style={{ justifyContent: "space-between" }}>
                         <Col>
-                           <List.Item.Meta title="Buisness Card" />
+                           <Typography.Title level={3}
+                              editable={{
+                                 onChange: (event) => updateExtractedText(event, item.id, "companyName"),
+                              }}
+                           >
+                              {item.companyName}
+                           </Typography.Title>
                            <table>
                               <tbody>
                                  <tr>
@@ -138,7 +144,7 @@ const TextExtractedPage = ({ fileList, setFileList }) => {
                            </table>
                         </Col>
                         <Col>
-                           <img width={272} height={200} alt="logo" src={process.env.REACT_APP_BACKEND_URL + "getImage/" + item.fileName} />
+                           <Image width={272} height={200} alt="logo" src={process.env.REACT_APP_BACKEND_URL + "getImage/" + item.fileName} />
                         </Col>
                      </Row>
                   </List.Item>

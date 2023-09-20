@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Row, Col, Button } from "antd";
+import { Card, Row, Col, Button, Image } from "antd";
 
 export default function DisplayImagesComponent({ fileList, removeFile }) {
    return (
@@ -14,7 +14,7 @@ export default function DisplayImagesComponent({ fileList, removeFile }) {
                         file.fileType === "zip" ? (
                            <div style={{ margin: "12px" }}>{file.fileName}</div>
                         ) : (
-                           <img src={`${process.env.REACT_APP_BACKEND_URL}/getImage/${file.fileName}`} alt={file.file} style={{ width: 300, height: 240 }} />
+                           <Image src={`${process.env.REACT_APP_BACKEND_URL}/getImage/${file.fileName}`} alt={file.file} width={250} height={150} />
                         )
                      }
                   >
