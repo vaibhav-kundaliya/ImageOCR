@@ -84,6 +84,5 @@ def downloadFile():
 
 
 if __name__ == "__main__":
-    nlp = spacy.load("en_core_web_sm")
 
     app.run(host="0.0.0.0", port=5000, debug=True)
