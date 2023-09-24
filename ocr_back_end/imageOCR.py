@@ -7,19 +7,18 @@ import cv2
 
 current_directory = os.path.dirname(os.path.realpath(__file__))
 uploads_directory = os.path.join(current_directory, 'uploads')
-nlp = spacy.load("en_core_web_sm")
 
 CONTACT_REGEX = r'(?:\+|)\d(?:[\.\s-]?\d){9,11}'
 URL_REGEX = r"www.*(?:in|com|org|net|dev)"
 EMAIL_REGEX = r'[\d|\w]+@\w+.(?:com|in|net|org|dev)'
-reader = easyocr.Reader(lang_list=['en'])
 
 def FetchCompanyName(text):
+    nlp = spacy.load("en_core_web_sm")
     doc = nlp(text)
     organizations = [ent.text for ent in doc.ents if ent.label_ == 'ORG']
     return " | ".join(organizations)
 
-def process_cropped_images_easy_ocr(image, bboxes):
+def process_cropped_images_easy_ocr(image, bboxes, reader):
     final_text = []
     for i in bboxes[0][0]:
         cropped_part = image[i[2] : i[3], i[0] : i[1]]
@@ -36,12 +35,13 @@ def process_cropped_images_easy_ocr(image, bboxes):
     return " ".join(final_text)
 
 def imageProcessing(image_path: str):
+    reader = easyocr.Reader(lang_list=['en'])
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
     resized_image = cv2.resize(image, (image.shape[1] // 3, image.shape[0] // 3))
 
     detect_text = reader.detect(resized_image)
 
-    return process_cropped_images_easy_ocr(resized_image, detect_text)
+    return process_cropped_images_easy_ocr(resized_image, detect_text, reader)
 
 
 def imageOCR(images: [dict]):
