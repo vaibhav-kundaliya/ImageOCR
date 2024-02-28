@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { List, Row, Col, Button, Spin, message, Typography, Image } from "antd";
-import { ExportOutlined, LeftOutlined } from "@ant-design/icons";
+import { LeftOutlined } from "@ant-design/icons";
 import SendPostRequest from "../utility/SendPostRequest";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";

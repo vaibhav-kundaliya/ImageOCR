@@ -1,4 +1,4 @@
-import {React, useState} from "react";
+import {React} from "react";
 import { Typography, Tabs, Button, Modal } from "antd";
 import { UploadOutlined, CameraOutlined, RightOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import UploadFilesComponent from "../components/uploadComponents/UploadFilesComponent";
