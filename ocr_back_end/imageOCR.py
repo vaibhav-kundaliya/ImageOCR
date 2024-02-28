@@ -37,7 +37,8 @@ def process_cropped_images_easy_ocr(image, bboxes, reader):
 def imageProcessing(image_path: str):
     reader = easyocr.Reader(lang_list=['en'])
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    resized_image = cv2.resize(image, (image.shape[1] // 4, image.shape[0] // 4))
+
+    resized_image = cv2.resize(image, (image.shape[1] // 3, image.shape[0] // 3))
 
     detect_text = reader.detect(resized_image)
 

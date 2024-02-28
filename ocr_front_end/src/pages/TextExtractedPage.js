@@ -66,8 +66,6 @@ const TextExtractedPage = ({ fileList }) => {
       fetchList();
    }, []);
 
- 
-
    return (
       <div
          style={{
@@ -98,15 +96,19 @@ const TextExtractedPage = ({ fileList }) => {
                   <List.Item key={item.id}>
                      <Row style={{ justifyContent: "space-between" }}>
                         <Col>
-                           <Typography.Title level={3}
-                              editable={{
-                                 onChange: (event) => updateExtractedText(event, item.id, "companyName"),
-                              }}
-                           >
-                              {item.companyName}
-                           </Typography.Title>
                            <table>
                               <tbody>
+                                 <tr>
+                                    <th>Company Name:</th>
+                                    <Paragraph
+                                       style={{ marginBottom: 0 }}
+                                       editable={{
+                                          onChange: (event) => updateExtractedText(event, item.id, "companyName"),
+                                       }}
+                                    >
+                                       {item.companyName}
+                                    </Paragraph>
+                                 </tr>
                                  <tr>
                                     <th>Email:</th>
                                     <Paragraph
