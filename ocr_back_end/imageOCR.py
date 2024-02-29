@@ -1,48 +1,28 @@
 import re
 import os
-import numpy as np
-import easyocr
+import pytesseract
 import spacy
 import cv2
 
 current_directory = os.path.dirname(os.path.realpath(__file__))
 uploads_directory = os.path.join(current_directory, 'uploads')
+nlp = spacy.load("en_core_web_sm")
 
 CONTACT_REGEX = r'(?:\+|)\d(?:[\.\s-]?\d){9,11}'
 URL_REGEX = r"www.*(?:in|com|org|net|dev)"
-EMAIL_REGEX = r'[\d|\w]+@\w+.(?:com|in|net|org|dev)'
+EMAIL_REGEX = r"""(?i)(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x3f\x41-\x5a\x61-\x7e]|\\[\\x01\-\x09\x0b\x0c\x0e-\x7f])+)@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}(?:\.[a-z]{2,})?"""
 
 def FetchCompanyName(text):
-    nlp = spacy.load("en_core_web_sm")
     doc = nlp(text)
     organizations = [ent.text for ent in doc.ents if ent.label_ == 'ORG']
     return " | ".join(organizations)
 
-def process_cropped_images_easy_ocr(image, bboxes, reader):
-    final_text = []
-    for i in bboxes[0][0]:
-        cropped_part = image[i[2] : i[3], i[0] : i[1]]
-        kernal = np.array([
-             [-1,-1,-1],
-             [-1,9,-1],
-             [-1,-1,-1]
-        ])
-        final_image = cv2.filter2D(cropped_part, -1, kernal)
-        text = reader.readtext(final_image, detail=0)
-        if text:
-                final_text.append(text[0])
-
-    return " ".join(final_text)
-
 def imageProcessing(image_path: str):
-    reader = easyocr.Reader(lang_list=['en'])
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-    resized_image = cv2.resize(image, (image.shape[1] // 4, image.shape[0] // 4))
+    image = cv2.imread(image_path)
+    resized_image = cv2.resize(image, (image.shape[1]//2, image.shape[0]//2))
 
-    detect_text = reader.detect(resized_image)
-
-    return process_cropped_images_easy_ocr(resized_image, detect_text, reader)
-
+    results = pytesseract.image_to_string(resized_image)
+    return results
 
 def imageOCR(images: [dict]):
     """Extract text from given list of images
