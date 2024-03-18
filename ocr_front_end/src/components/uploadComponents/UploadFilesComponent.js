@@ -15,7 +15,6 @@ export default function UploadFilesComponent({ addFile }) {
       form.append("file", file, newFileName);
 
       try {
-         console.log("Check one",form)
          const response = await SendPostRequest("saveImage", form);
          addFile({
             id: id,

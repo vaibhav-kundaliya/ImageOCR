@@ -12,7 +12,6 @@ const DownloadComponent = ({ data }) => {
          SheetData.push([item["companyName"], item["website"], item["email"], item["contact"]]);
       });
 
-      console.log(SheetData)
       const ws = XLSX.utils.aoa_to_sheet(SheetData);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
